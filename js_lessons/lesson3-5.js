@@ -368,6 +368,27 @@ console.log(hello('Volodimir'));*/
 accelerateCar(console.log, 200);*/
 
 
+// // Arrow Function (Стрілкова функція):
+
+// const sayHello = (name) => `Привіт, ${name}!`;
+
+// // З декількома параметрами
+// const sum = (a, b) => a + b;
+
+// // Без параметрів
+// const greet = () => "Привіт!";
+
+// // З блоком коду
+// const calculate = (a, b) => {
+//     const result = a * b;
+//     return result;
+// };
+
+// IIFE (Immediately Invoked Function Expression):
+// (function() {
+//     console.log("Функція виконується відразу");
+// })();
+
 
 
 
