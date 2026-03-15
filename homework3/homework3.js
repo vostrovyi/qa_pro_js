@@ -1,22 +1,24 @@
 function pow(x, y) {
- let rez = 1;
+    if (!Number.isInteger(y)) {
+        return "Power is not an integer";
+    }
+    else{
+        let rez = 1;
 
- if (y >= 0) {
- for (let i = 1; i <= y; i++) {
- rez = rez * x;
- }
- } else {
- for (let i = 1; i <= -y; i++) {
- rez = rez * x;
- }
- rez = 1 / rez;
- }
+        if (y >= 0) {
+            for (let i = 1; i <= y; i++) {
+                rez = rez * x;
+            }
+        } else if (y < 0) {
+            for (let i = 1; i <= -y; i++) {
+                rez = rez * x;
+            }
+            rez = 1 / rez;
+        }
 
- return rez;
+        return rez;
+    }
 }
 
-console.log(pow(-7, 1 / 3)) // (1, NaN)
-
-
-let math = Math.pow(-7, 1 / 3); 
-console.log(math)
+console.log(pow(-2, 3)) // -8
+//console.log(Math.pow(-2, 3))
