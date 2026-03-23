@@ -13,16 +13,19 @@ var barbar = {
   options: {
     "стрижка": "60 грн",
     "гоління": "80 грн",
-    "Миття голови": "100 грн",
+    "Миття голови": "100 грн"
+},
 
     price: function () {
       let totalPrice = 0;
+      let fullValues = JSON.stringify(Object.values(this.options));
 
-      //console.log("Main option: " + barbar.options.teacher);
+      let number = fullValues.split(' ')[0];
+        //if(Object.values(this.options).length > 0 && Object.values(this.options).endsWith("грн")) {}
+      console.log(number);
     },
     minPrice: function () {},
     maxPrice: function () {},
-  },
 };
 
 barbar.price();
