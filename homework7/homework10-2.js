@@ -15,3 +15,9 @@
 Вислати вашу гілку
 */
 
+let str = "Wonderful, Joyful, Happiness, Time, Task, Apple";
+console.log(str);
+
+let re = /(^|[\s])[^aA\s,]{6,}/g
+console.log(str.match(re));
+console.log(re.test(str));
