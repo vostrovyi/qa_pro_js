@@ -9,18 +9,36 @@
 
 export const numbers = [10, 5, 8, 2, 17, 30, 1];
 
-export function findMax(arr) {
-    //"НАПИШІТЬ ТУТ ВАШ КОД"
-}
+// export function findMax(arr) {
+//     //"НАПИШІТЬ ТУТ ВАШ КОД"
+// }
+
+
+
 
 // Функція для знаходження найменшого елемента
 export function findMin(arr) {
     //"НАПИШІТЬ ТУТ ВАШ КОД"
+    let m = arr[0]; // Ініціалізуємо мінімальне значення першим елементом масиву
+
+    console.log(arr.length); // 7
+
+
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] < m) {
+            m = arr[i];
+            console.log("Знайдено новий мінімальний елемент: " + m);
+        }
+        else {
+            console.log("Поточний елемент " + arr[i] + " не є меншим за поточний мінімальний елемент " + m);
+    }
+    return true;
+}
 }
 
 // Використання функцій для знаходження найбільшого і найменшого елементів
-const max = findMax(numbers);
+//const max = findMax(numbers);
 const min = findMin(numbers);
 
-console.log("Найбільший елемент: " + max);
+//console.log("Найбільший елемент: " + max);
 console.log("Найменший елемент: " + min);
