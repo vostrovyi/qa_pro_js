@@ -1,0 +1,1325 @@
+{
+  "info": {
+    "_postman_id": "1a09e498-635e-4cc2-876a-89069c8fe581",
+    "name": "Manual",
+    "description": "## 👀 Variables\n\n`{{name}}` ->> is coming from Pre-Request Script in the POST 'Sign UP'\n\n`{{lastName}}` ->> is coming from Pre-Request Script in the POST 'Sign UP'\n\n`{{email}}` ->> is coming from Pre-Request Script in the POST 'Sign UP'\n\n`{{password}}` ->> is coming from Pre-Request Script in the POST 'Sign UP'\n\n`{{userId}}`\\->> is coming from Pre-Request Script in the POST 'Sign UP'\n\n---\n\n`{{`cardId`}}` ->> is coming from Post-Response Script in the POST 'Create New Car'\n\n---\n\n`{{today}}` ->> is coming from Pre-Request Script in the POST 'Create Car Expenses' & 'PUT Edit User's Profile'\n\n`{{expenseId}}` ->> is coming from Post-Response Script in the POST 'Create Car Expenses'\n\n---",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51453377",
+    "_collection_link": "https://go.postman.co/collection/51453377-1a09e498-635e-4cc2-876a-89069c8fe581?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "HOMEwork RUN",
+      "item": [
+        {
+          "name": "Sign UP",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set(\"name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.collectionVariables.set(\"lastName\", pm.variables.replaceIn('{{$randomLastName}}'));",
+                  "pm.collectionVariables.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "",
+                  "const upper = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";",
+                  "const lower = \"abcdefghijklmnopqrstuvwxyz\";",
+                  "const digits = \"0123456789\";",
+                  "const all = upper + lower + digits;",
+                  "",
+                  "const length = Math.floor(Math.random() * 8) + 8; // --->>> get length from 8 to 15.",
+                  "// --->>> Math.random() : generate from 0 to 1",
+                  "// --->>> Math.floor() : round to the nearest lower",
+                  "",
+                  "let password = ",
+                  "    upper[Math.floor(Math.random() * upper.length)] +",
+                  "    lower[Math.floor(Math.random() * lower.length)] +",
+                  "    digits[Math.floor(Math.random() * digits.length)];",
+                  "",
+                  "for (let i = 3; i < length; i++) {",
+                  "    password += all[Math.floor(Math.random() * all.length)];",
+                  "}",
+                  "",
+                  "pm.collectionVariables.set(\"password\", password);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let body;",
+                  "",
+                  "try {",
+                  "    body = pm.response.json();",
+                  "} catch (e) {",
+                  "    body = null;",
+                  "}",
+                  "",
+                  "let schema = {",
+                  "    \"type\": \"object\",",
+                  "    \"additionalProperties\": false,",
+                  "    \"properties\": {",
+                  "        \"status\": {",
+                  "            \"type\": \"string\"",
+                  "        },",
+                  "        \"data\": {",
+                  "            \"type\": \"object\",",
+                  "            \"additionalProperties\": false,",
+                  "            \"properties\": {",
+                  "                \"userId\": {",
+                  "                    \"type\": \"integer\"",
+                  "                },",
+                  "                \"photoFilename\": {",
+                  "                    \"type\": \"string\"",
+                  "                },",
+                  "                \"distanceUnits\": {",
+                  "                    \"type\": \"string\"",
+                  "                },",
+                  "                \"currency\": {",
+                  "                    \"type\": \"string\"",
+                  "                }",
+                  "            },",
+                  "            \"required\": [",
+                  "                \"userId\",",
+                  "                \"photoFilename\",",
+                  "                \"distanceUnits\",",
+                  "                \"currency\"",
+                  "            ]",
+                  "        }",
+                  "    },",
+                  "    \"required\": [",
+                  "        \"status\",",
+                  "        \"data\"",
+                  "    ]",
+                  "};",
+                  "",
+                  "",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201){",
+                  "",
+                  "// set variable safely",
+                  "if (body?.data?.userId != null) {",
+                  "    pm.collectionVariables.set(\"userId\", body.data.userId);",
+                  "}",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"Created\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check status\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check json schema\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check email format\", function () {",
+                  "            let email = pm.collectionVariables.get(\"email\");",
+                  "        //pm.expect(email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+                  "        pm.expect(email).to.match(/[\\w\\.]+@[\\w-]+\\.[a-z]{2,}/i);",
+                  "    });",
+                  "",
+                  "}",
+                  "else {",
+                  "    throw new Error (\"Test stopped\")",
+                  "}",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{name}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"repeatPassword\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/auth/signup",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto2.forstudy.space/api/auth/signup' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"name\": \"John\",\n  \"lastName\": \"Dou\",\n  \"email\": \"test@test.com\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Repeat Sign UP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check error message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    let msg = pm.response.json().message;",
+                  "    pm.expect(status).to.eql(\"error\");",
+                  "    pm.expect(msg).to.eql(\"User already exists\");",
+                  "});",
+                  "",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{name}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"repeatPassword\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/auth/signup",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto2.forstudy.space/api/auth/signup' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"name\": \"John\",\n  \"lastName\": \"Dou\",\n  \"email\": \"test@test.com\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "User's Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// console.log(pm.response); // повертає об'єкт який містить інформацію про відповідь",
+                  "//console.log(pm.response.code); // повертає статус код",
+                  "// console.log(pm.response.status); // повертає саму дію яку виконує запит (\"ОК\")",
+                  "// console.log(pm.response.headers); // повертає масив наших хедерів",
+                  "// console.log(pm.response.responseTime); // повертає час отримання відповіді в мілісекундах",
+                  "// console.log(pm.response.responseSize); // повертає розмір отриманої відповіді",
+                  "// console.log(pm.response.json()); // повертає JSON об'єкт відповіді",
+                  "// console.log(pm.response.text()); // повертає текстовий вміст відповіді",
+                  "// console.log(JSON.parse(pm.response.text()))",
+                  "// console.log(pm.response.cookies);",
+                  "",
+                  "/*",
+                  "перевірку помилок, зробити для тренування саме на тип даних, спосіб обирайте самі.",
+                  "Уявімо що в нас буде локалізація, і помилка може приходити на різних мовах",
+                  "*/",
+                  "let body;",
+                  "",
+                  "try {",
+                  "    body = pm.response.json();",
+                  "} catch (e) {",
+                  "    body = null;",
+                  "}",
+                  "",
+                  "let n = pm.collectionVariables.get(\"name\");",
+                  "let ln = pm.collectionVariables.get(\"lastName\");",
+                  "",
+                  "let schema = {",
+                  "    \"type\": \"object\",",
+                  "    \"additionalProperties\": false,",
+                  "    \"properties\": {",
+                  "        \"status\": {",
+                  "            \"type\": \"string\"",
+                  "        },",
+                  "        \"data\": {",
+                  "            \"type\": \"object\",",
+                  "            \"additionalProperties\": false,",
+                  "            \"properties\": {",
+                  "                \"userId\": {",
+                  "                    \"type\": \"integer\"",
+                  "                },",
+                  "                \"photoFilename\": {",
+                  "                    \"type\": \"string\"",
+                  "                },",
+                  "                \"name\": {",
+                  "                    \"type\": \"string\",",
+                  "                    \"minLength\": 1",
+                  "                },",
+                  "                \"lastName\": {",
+                  "                    \"type\": \"string\"",
+                  "                }",
+                  "            },",
+                  "            \"required\": [",
+                  "                \"userId\",",
+                  "                \"photoFilename\",",
+                  "                \"name\",",
+                  "                \"lastName\"",
+                  "            ]",
+                  "        }",
+                  "    },",
+                  "    \"required\": [",
+                  "        \"status\",",
+                  "        \"data\"",
+                  "    ]",
+                  "}",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// pm.test(\"Response is valid JSON\", function () {",
+                  "//     pm.expect(body).to.be.an(\"object\");",
+                  "// });",
+                  "",
+                  "// pm.test(pm.info.requestName + \": \" + \"Check body is not empty\", function () {",
+                  "//     pm.expect(body).to.have.property(\"data\");",
+                  "// });",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check json schema\", function () {",
+                  "    pm.expect(body, \"Body should be valid JSON\").to.be.an(\"object\");",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": Check name\", function () {",
+                  "    if (!body) {",
+                  "        pm.expect.fail(\"Response is not a valid JSON\");",
+                  "    }",
+                  "    pm.expect(body.data.name).to.eql(n);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": Check lastName\", function () {",
+                  "    if (!body) {",
+                  "        pm.expect.fail(\"Response is not a valid JSON\");",
+                  "    }",
+                  "    pm.expect(body.data.lastName).to.eql(ln);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/users/profile",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'GET' \\\n  'https://qauto.forstudy.space/api/users/profile' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        },
+        {
+          "name": "Edit User's Profile",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "let moment = require('moment'); // Import moment.js library",
+                  "pm.collectionVariables.set(\"today\", moment().format('YYYY-MM-DD'));",
+                  "",
+                  "pm.collectionVariables.set(\"name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.collectionVariables.set(\"lastName\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check username\", function () {",
+                  "    let jsonName = pm.response.json().data.name;",
+                  "    let jsonLastName = pm.response.json().data.lastName;",
+                  "    pm.expect(jsonName).to.eql(pm.collectionVariables.get(\"name\"));",
+                  "    pm.expect(jsonLastName).to.eql(pm.collectionVariables.get(\"lastName\"));",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check dateBirth\", function () {",
+                  "    let jsonBirthDate = pm.response.json().data.dateBirth.split(\"T\")[0]; // \"2026-04-14\"",
+                  "    let v = pm.collectionVariables.get(\"today\").split(\"T\")[0]; // \"2026-04-14\"",
+                  "    ",
+                  "    pm.expect(jsonBirthDate).to.eql(v);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check country\", function () {",
+                  "    let jsonCountry = pm.response.json().data.country;",
+                  "    pm.expect(jsonCountry).to.eql(\"Ukraine\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{name}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"dateBirth\": \"{{today}}\",\n  \"country\": \"Ukraine\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/users/profile",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'PUT' \\\n  'https://qauto.forstudy.space/api/users/profile' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"photo\": \"user-1621352948859.jpg\",\n  \"name\": \"John\",\n  \"lastName\": \"Dou\",\n  \"dateBirth\": \"2021-03-17T15:21:05.000Z\",\n  \"country\": \"Ukraine\"\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "User's Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// console.log(pm.response); // повертає об'єкт який містить інформацію про відповідь",
+                  "//console.log(pm.response.code); // повертає статус код",
+                  "// console.log(pm.response.status); // повертає саму дію яку виконує запит (\"ОК\")",
+                  "// console.log(pm.response.headers); // повертає масив наших хедерів",
+                  "// console.log(pm.response.responseTime); // повертає час отримання відповіді в мілісекундах",
+                  "// console.log(pm.response.responseSize); // повертає розмір отриманої відповіді",
+                  "// console.log(pm.response.json()); // повертає JSON об'єкт відповіді",
+                  "// console.log(pm.response.text()); // повертає текстовий вміст відповіді",
+                  "// console.log(JSON.parse(pm.response.text()))",
+                  "// console.log(pm.response.cookies);",
+                  "",
+                  "/*",
+                  "перевірку помилок, зробити для тренування саме на тип даних, спосіб обирайте самі.",
+                  "Уявімо що в нас буде локалізація, і помилка може приходити на різних мовах",
+                  "*/",
+                  "let body;",
+                  "",
+                  "try {",
+                  "    body = pm.response.json();",
+                  "} catch (e) {",
+                  "    body = null;",
+                  "}",
+                  "",
+                  "let n = pm.collectionVariables.get(\"name\");",
+                  "let ln = pm.collectionVariables.get(\"lastName\");",
+                  "",
+                  "let schema = {",
+                  "    \"type\": \"object\",",
+                  "    //\"additionalProperties\": false,",
+                  "    \"properties\": {",
+                  "        \"status\": {",
+                  "            \"type\": \"string\"",
+                  "        },",
+                  "        \"data\": {",
+                  "            \"type\": \"object\",",
+                  "            //\"additionalProperties\": false,",
+                  "            \"properties\": {",
+                  "                \"userId\": {",
+                  "                    \"type\": \"integer\"",
+                  "                },",
+                  "                \"photoFilename\": {",
+                  "                    \"type\": \"string\"",
+                  "                },",
+                  "                \"name\": {",
+                  "                    \"type\": \"string\",",
+                  "                    \"minLength\": 1",
+                  "                },",
+                  "                \"lastName\": {",
+                  "                    \"type\": \"string\"",
+                  "                }",
+                  "            },",
+                  "            \"required\": [",
+                  "                \"userId\",",
+                  "                \"photoFilename\",",
+                  "                \"name\",",
+                  "                \"lastName\"",
+                  "            ]",
+                  "        }",
+                  "    },",
+                  "    \"required\": [",
+                  "        \"status\",",
+                  "        \"data\"",
+                  "    ]",
+                  "}",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// pm.test(\"Response is valid JSON\", function () {",
+                  "//     pm.expect(body).to.be.an(\"object\");",
+                  "// });",
+                  "",
+                  "// pm.test(pm.info.requestName + \": \" + \"Check body is not empty\", function () {",
+                  "//     pm.expect(body).to.have.property(\"data\");",
+                  "// });",
+                  "",
+                  "pm.test(pm.info.requestName + \": \" + \"Check json schema\", function () {",
+                  "    pm.expect(body, \"Body should be valid JSON\").to.be.an(\"object\");",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": Check name\", function () {",
+                  "    if (!body) {",
+                  "        pm.expect.fail(\"Response is not a valid JSON\");",
+                  "    }",
+                  "    pm.expect(body.data.name).to.eql(n);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": Check lastName\", function () {",
+                  "    if (!body) {",
+                  "        pm.expect.fail(\"Response is not a valid JSON\");",
+                  "    }",
+                  "    pm.expect(body.data.lastName).to.eql(ln);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/users/profile",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'GET' \\\n  'https://qauto.forstudy.space/api/users/profile' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        },
+        {
+          "name": "Change User's Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check status\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check userId\", function () {",
+                  "    pm.expect(pm.response.json().data.userId).to.eql(pm.collectionVariables.get(\"userId\"));",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"{{password}}\",\n  \"password\": \"{{newPass}}\",\n  \"repeatPassword\": \"{{newPass}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/users/password",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users",
+                "password"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'PUT' \\\n  'https://qauto.forstudy.space/api/users/password' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"oldPassword\": \"FooBar12345\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Repeat Change User's Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check error message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    let message = pm.response.json().message;",
+                  "    pm.expect(status).to.eql(\"error\");",
+                  "    pm.expect(message).to.eql(\"Wrong password\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"{{password}}\",\n  \"password\": \"{{newPass}}\",\n  \"repeatPassword\": \"{{newPass}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/users/password",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users",
+                "password"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'PUT' \\\n  'https://qauto.forstudy.space/api/users/password' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"oldPassword\": \"FooBar12345\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Log Out",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check status\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check response time\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check response headers\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/auth/logout",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'GET' \\\n  'https://qauto2.forstudy.space/api/auth/logout' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        },
+        {
+          "name": "Sign IN with OLD creds",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"Bad Request\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check error message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    let msg = pm.response.json().message;",
+                  "    pm.expect(status).to.eql(\"error\");",
+                  "    pm.expect(msg).to.eql(\"Wrong email or password\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check response headers\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");",
+                  "});",
+                  "",
+                  "pm.test(\"Set-Cookie header should NOT exist\", function () {",
+                  "    pm.expect(pm.response.headers.has(\"Set-Cookie\")).to.be.false;",
+                  "    // OR",
+                  "    // const cookieHeader = pm.response.headers.get(\"Set-Cookie\");",
+                  "    // pm.expect(cookieHeader).to.be.undefined;",
+                  "});",
+                  "",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"remember\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/auth/signin",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "signin"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto2.forstudy.space/api/auth/signin' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"email\": \"test@test.com\",\n  \"password\": \"Qwerty12345\",\n  \"remember\": false\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Sign IN with NEW creds",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check error message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check response headers\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName + \": Check sid cookie exists\", function () {",
+                  "    const cookies = pm.response.headers.get(\"Set-Cookie\");",
+                  "    pm.expect(cookies).to.not.be.undefined;",
+                  "    pm.expect(cookies).to.match(/sid=/);",
+                  "    pm.expect(cookies).to.include(\"Path=/\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{newPass}}\",\n  \"remember\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/auth/signin",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "auth",
+                "signin"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto2.forstudy.space/api/auth/signin' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"email\": \"test@test.com\",\n  \"password\": \"Qwerty12345\",\n  \"remember\": false\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Car",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"Created\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check status\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "let cardId = pm.response.json().data.id;",
+                  "pm.collectionVariables.set(\"cardId\", JSON.stringify(cardId)); // Store cardId in collection variable"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/cars",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "cars"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto.forstudy.space/api/cars' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"carBrandId\": 1,\n  \"carModelId\": 1,\n  \"mileage\": 122\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Car Expenses",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "let moment = require('moment'); // Import moment.js library",
+                  "pm.collectionVariables.set(\"today\", moment().format('YYYY-MM-DD'));",
+                  "",
+                  "let lastMileage = pm.collectionVariables.get(\"lastMileage\");",
+                  "let lastCost = pm.collectionVariables.get(\"lastCost\");",
+                  "let lastLiters = pm.collectionVariables.get(\"lastLiters\");",
+                  "",
+                  "if (!lastMileage) {",
+                  "    lastMileage = 1;",
+                  "    lastCost = 12;",
+                  "    lastLiters = 10;",
+                  "} else {",
+                  "    lastMileage = Number(lastMileage) + 1;",
+                  "    lastCost = Number(lastCost) + 10;",
+                  "    lastLiters = Number(lastCost) + 5;",
+                  "}",
+                  "",
+                  "pm.collectionVariables.set(\"lastMileage\", lastMileage);",
+                  "pm.collectionVariables.set(\"lastCost\", lastCost);",
+                  "pm.collectionVariables.set(\"lastLiters\", lastLiters);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let expenseId = pm.response.json().data.id; // Store the expenseId in a collection variable for later use ",
+                  "pm.collectionVariables.set(\"expenseId\", JSON.stringify(expenseId));",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"carId\": {{cardId}},\n  \"reportedAt\": \"{{today}}\",\n  \"mileage\": {{lastMileage}},\n  \"liters\": {{lastLiters}},\n  \"totalCost\": {{lastCost}},\n  \"forceMileage\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/expenses",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\n  'https://qauto2.forstudy.space/api/expenses' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"carId\": 1,\n  \"reportedAt\": \"2021-05-17\",\n  \"mileage\": 111,\n  \"liters\": 11,\n  \"totalCost\": 11,\n  \"forceMileage\": false\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Car Expenses by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check status\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check id\", function () {",
+                  "    let id = pm.response.json().data.id;",
+                  "    let v = pm.collectionVariables.get(\"expenseId\");",
+                  "",
+                  "    // console.log(\"id:\", id, typeof id);",
+                  "    // console.log(\"v:\", v, typeof v);",
+                  "",
+                  "    pm.expect(id).to.eql(Number(v)); // convert v to number",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/expenses/{{expenseId}}",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "expenses",
+                "{{expenseId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'GET' \\\n  'https://qauto2.forstudy.space/api/expenses/3' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    pm.expect(status).to.eql(\"ok\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/users",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'DELETE' \\\n  'https://qauto.forstudy.space/api/users' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        },
+        {
+          "name": "Repeat DELETE User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Status code name has string\", function () {",
+                  "    pm.response.to.have.status(\"Unauthorized\");",
+                  "});",
+                  "",
+                  "pm.test(pm.info.requestName+\": \"+  \"Check error message\", function () {",
+                  "    let status = pm.response.json().status;",
+                  "    let msg = pm.response.json().message;",
+                  "    pm.expect(status).to.eql(\"error\");",
+                  "    pm.expect(msg).to.eql(\"Not authenticated\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/users",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'DELETE' \\\n  'https://qauto.forstudy.space/api/users' \\\n  -H 'accept: application/json'"
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "password",
+      "value": "Qk5YfLwEf1"
+    },
+    {
+      "key": "newPass",
+      "value": "Qwerty1234"
+    },
+    {
+      "key": "cardId",
+      "value": "241777"
+    },
+    {
+      "key": "expenseId",
+      "value": "177973"
+    },
+    {
+      "key": "name",
+      "value": "Ethel"
+    },
+    {
+      "key": "lastName",
+      "value": "Nader"
+    },
+    {
+      "key": "email",
+      "value": "Erling80@gmail.com"
+    },
+    {
+      "key": "today",
+      "value": "2026-04-17"
+    },
+    {
+      "key": "userId",
+      "value": 174848
+    },
+    {
+      "key": "lastMileage",
+      "value": 44
+    },
+    {
+      "key": "lastCost",
+      "value": 530
+    },
+    {
+      "key": "lastLiters",
+      "value": 535
+    }
+  ]
+}
