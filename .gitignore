@@ -8,4 +8,5 @@ node_modules/
 /playwright/.auth/
 .env
 .DS_Store
-draft.js*.csv
+draft.js
+*.csv
